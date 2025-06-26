@@ -1,0 +1,11 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "Launch Qt Designer",
+      "type": "shell",
+      "command": "unset GTK_PATH && designer ${workspaceFolder}/mainwindow.ui",
+      "problemMatcher": []
+    }
+  ]
+}

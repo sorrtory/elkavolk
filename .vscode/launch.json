@@ -9,7 +9,12 @@
             "args": [],
             "stopAtEntry": false,
             "cwd": "${workspaceFolder}",
-            "environment": [],
+            "environment": [
+                {
+                    "name": "GTK_PATH",
+                    "value": ""
+                }
+            ],
             "externalConsole": false,
             "MIMode": "gdb",
             "setupCommands": [
