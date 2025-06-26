@@ -1,0 +1,9 @@
+# ninja log v5
+2	215	1750937174905387763	elkavolk_autogen/timestamp	ede24060ae7caafd
+2	215	1750937174905387763	elkavolk_autogen/mocs_compilation.cpp	ede24060ae7caafd
+2	215	1750937174905387763	/home/z/Documents/coursework_elkavolk/elkavolk/build/Desktop-Debug/elkavolk_autogen/timestamp	ede24060ae7caafd
+2	215	1750937174905387763	/home/z/Documents/coursework_elkavolk/elkavolk/build/Desktop-Debug/elkavolk_autogen/mocs_compilation.cpp	ede24060ae7caafd
+216	1396	1750937176077411967	CMakeFiles/elkavolk.dir/elkavolk_autogen/mocs_compilation.cpp.o	dd4d090ef5b24788
+216	1444	1750937176125412958	CMakeFiles/elkavolk.dir/main.cpp.o	85b1a2bc91310b70
+216	1481	1750937176163413743	CMakeFiles/elkavolk.dir/mainwindow.cpp.o	b4f719806480fcf1
+1481	1824	1750937176506420826	elkavolk	3560e5eb6840ca56
