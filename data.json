@@ -1,0 +1,42 @@
+{
+  "signals": [
+    {
+      "name": "signal1",
+      "duration": 2.5,
+      "sampleRate": 100,
+      "overtones": [
+        {
+          "name": "overtone1",
+          "frequency": 440,
+          "amplitude": 0.5,
+          "phase": 0
+        },
+        {
+          "name": "overtone2",
+          "frequency": 880,
+          "amplitude": 0.3,
+          "phase": 0.5
+        }
+      ]
+    },
+    {
+      "name": "signal2",
+      "duration": 2.5,
+      "sampleRate": 44100,
+      "overtones": [
+        {
+          "name": "overtone1",
+          "frequency": 660,
+          "amplitude": 0.4,
+          "phase": 0.2
+        },
+        {
+          "name": "overtone2",
+          "frequency": 1320,
+          "amplitude": 0.2,
+          "phase": 0.7
+        }
+      ]
+    }
+  ]
+}
