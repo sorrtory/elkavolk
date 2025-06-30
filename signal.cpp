@@ -1,31 +1,39 @@
 #include "signal.h"
 #include <iostream>
+
+// Calculate samples for the entire signal (duration*sampleRate)
 std::vector<double> Signal::getSamples() const
 {
-    // Calculate samples (sampleRate-sized) for the entire signal
     std::vector<double> samples;
+    int points = sampleRate * duration;
+    samples.reserve(points);
 
-    double timestep = duration / sampleRate;
-    double time = 0.0;
-    for (int n = 0; n < sampleRate; n++)
+    // Sample the signal at each point in time
+    for (int n = 0; n < points; n++)
     {
-        double value = getValue(time);
+        double value = getValue(static_cast<double>(n) / sampleRate);
         samples.push_back(value);
-        time += timestep;
     }
+
     return samples;
 }
 
 
-void Signal::calcDFT()
+std::vector<std::complex<double>> Signal::getDFT() const
 {
-    // Calculate samples (sampleRate-sized) for the entire signal
+    
+    // Calculate samples for the entire signal
     std::vector<double> samples = getSamples();
-
+    if (samples.empty())
+    {
+        std::cerr << "No samples available for DFT calculation." << std::endl;
+        return {};
+    }
+    
     // Calculate the Discrete Fourier Transform (DFT)
-    DFT.clear();
+    std::vector<std::complex<double>> DFT;
     DFT.resize(sampleRate);
-
+    
     // https://en.wikipedia.org/wiki/Discrete_Fourier_transform#Example_2
     for (size_t k = 0; k < sampleRate; k++)
     {
@@ -38,4 +46,5 @@ void Signal::calcDFT()
         }
         DFT[k] = sum;
     }
+    return DFT;
 }

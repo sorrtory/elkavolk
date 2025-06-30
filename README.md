@@ -33,5 +33,7 @@
 ```bash
 
 sudo apt install libqt5charts5-dev
+sudo apt install qtmultimedia5-dev
+sudo apt install libqt5multimedia5-plugins
 ```
 

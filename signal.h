@@ -29,6 +29,9 @@ struct overtone
         frequency = obj["frequency"].toDouble();
         phase = obj["phase"].toDouble();
     }
+
+    overtone(QString name, double amplitude, double frequency, double phase)
+        : name(name), amplitude(amplitude), frequency(frequency), phase(phase) {};
 };
 
 // Signal class representing a collection of overtones
@@ -48,14 +51,15 @@ public:
     }
     ~Signal() = default;
 
+    // Return samples of the signal by sampleRate and duration
     std::vector<double> getSamples() const;
-    
+
     // Calculate the Discrete Fourier Transform (DFT) coefficients
     // by sampling the signal over its duration
-    void calcDFT();
+    std::vector<std::complex<double>> getDFT() const;
 
+    // List of overtones making up the signal
     std::vector<overtone> overtones;
-    std::vector<std::complex<double>> DFT;
 
     double duration;  // Duration in seconds
     int sampleRate;   // Sample rate in Hz
