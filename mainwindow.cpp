@@ -36,7 +36,6 @@ MainWindow::MainWindow(QWidget *parent)
     // Init with the first signal if available
     if (!this->signalList.empty())
     {
-        ui->signal->setCurrentIndex(0);
         on_signal_currentIndexChanged(0);
         updateCharts();
     }
@@ -200,6 +199,11 @@ void MainWindow::updateCharts() const
 }
 
 void MainWindow::on_graphBtn_clicked(){
+    if (this->signalList.empty())
+    {
+        qWarning() << "No signals available to plot.";
+        return; // No signals to plot
+    }
     updateCharts();
 }
 
@@ -252,6 +256,15 @@ void MainWindow::on_playBtn_clicked()
 }
 
 // ---------- Signal management
+
+void MainWindow::clearSignalProperties() const
+{
+    WITH_NO_SIGNALS(signal_name, clear());
+    WITH_NO_SIGNALS(signal_duration, clear());
+    WITH_NO_SIGNALS(signal_sampleRate, clear());
+    clearOvertones();
+}
+
 void MainWindow::on_signal_newBtn_clicked()
 {
     // Create a new signal with default values
@@ -261,12 +274,10 @@ void MainWindow::on_signal_newBtn_clicked()
     this->signalList.push_back(newSignal);
 
     // Update the signal dropdown
-    ui->signal->blockSignals(true);
-    ui->signal->addItem(newSignal.name);
-    ui->signal->blockSignals(false);
+    WITH_NO_SIGNALS(signal, addItem(newSignal.name));
 
     // Select the new signal
-    ui->signal->setCurrentIndex(this->signalList.size() - 1);
+    on_signal_currentIndexChanged(this->signalList.size() - 1);
 }
 
 void MainWindow::on_signal_removeBtn_clicked()
@@ -289,9 +300,12 @@ void MainWindow::on_signal_removeBtn_clicked()
     // Select the first signal if available
     if (!this->signalList.empty())
     {
-        ui->signal->setCurrentIndex(0);
         on_signal_currentIndexChanged(0);
+    } else
+    {
+        clearSignalProperties();
     }
+    
 }
 
 
@@ -302,6 +316,8 @@ void MainWindow::on_signal_currentIndexChanged(int index)
         qWarning() << "Invalid signal index" << index;
         return;
     }
+    // Clear previous signal properties (and overtones)
+    clearSignalProperties();
 
     const Signal &signal = this->signalList[index];
     // Update the signal name, duration, and sample rate
@@ -321,7 +337,13 @@ void MainWindow::on_signal_currentIndexChanged(int index)
     }
     ui->overtone->blockSignals(false);
 
-    on_overtone_currentIndexChanged(0);
+
+    // If there are overtones, select the first one
+    if (!signal.overtones.empty())
+    {
+        on_overtone_currentIndexChanged(0);
+    } 
+    // on_overtone_currentIndexChanged(0);
 }
 
 
@@ -374,8 +396,18 @@ void MainWindow::on_overtone_newBtn_clicked()
     ui->overtone->blockSignals(false);
 
     // Select the new overtone
-    ui->overtone->setCurrentIndex(signal.overtones.size() - 1);
+    on_overtone_currentIndexChanged(signal.overtones.size() - 1);
 }
+
+void MainWindow::clearOvertones() const
+{
+    WITH_NO_SIGNALS(overtone, clear());
+    WITH_NO_SIGNALS(overtone_name, clear());
+    WITH_NO_SIGNALS(overtone_amplitude, clear());
+    WITH_NO_SIGNALS(overtone_frequency, clear());
+    WITH_NO_SIGNALS(overtone_phase, clear());
+}
+
 
 void MainWindow::on_overtone_removeBtn_clicked()
 {
@@ -398,7 +430,6 @@ void MainWindow::on_overtone_removeBtn_clicked()
     // Select the first overtone if available
     if (!signal.overtones.empty())
     {
-        ui->overtone->setCurrentIndex(0);
         on_overtone_currentIndexChanged(0);
     }
 }

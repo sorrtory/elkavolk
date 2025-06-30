@@ -67,6 +67,7 @@
         "codecvt": "cpp",
         "cstring": "cpp",
         "future": "cpp",
-        "iostream": "cpp"
+        "iostream": "cpp",
+        "qaudiodecoder": "cpp"
     }
 }

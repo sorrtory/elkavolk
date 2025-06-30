@@ -16,6 +16,15 @@
 #include <QAudioDecoder>
 #include <QIODevice>
 
+#define WITH_NO_SIGNALS(var, inside) \
+    do { \
+        ui->var->blockSignals(true); \
+        ui->var->inside; \
+        ui->var->blockSignals(false); \
+    } while(0)
+
+
+
 QT_BEGIN_NAMESPACE
 namespace Ui {
 class MainWindow;
@@ -34,6 +43,9 @@ public:
 
     int getCurrentSignalIndex() const;
     int getCurrentOvertoneIndex() const;
+    void clearSignalProperties() const;
+    void clearOvertones() const;
+
     void updateSignalCharts() const;
     void updateDFTCharts() const;
     void updateCharts() const;
