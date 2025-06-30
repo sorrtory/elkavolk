@@ -1,13 +1,12 @@
 #include "mainwindow.h"
 #include "./ui_mainwindow.h"
 
-
-
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent), ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
-
+    this->setFixedSize(this->size().width(), this->size().height());
+    
     // Load signal data from JSON file
     QVariant input_signals = readJsonProperty(":/data/data.json", "signals");
 
@@ -58,7 +57,7 @@ int MainWindow::getCurrentSignalIndex() const
 
 int MainWindow::getCurrentOvertoneIndex() const
 {
-    if (ui->overtone->currentIndex() < 0 || 
+    if (ui->overtone->currentIndex() < 0 ||
         ui->overtone->currentIndex() >= this->signalList[getCurrentSignalIndex()].overtones.size())
     {
         qWarning() << "Invalid overtone index" << ui->overtone->currentIndex();
@@ -82,7 +81,7 @@ void MainWindow::updateSignalCharts() const
     }
 
     std::vector<double> samples = signal.getSamples();
-    
+
     if (samples.empty())
     {
         qWarning() << "No samples available for signal" << signal.name;
@@ -106,10 +105,10 @@ void MainWindow::updateSignalCharts() const
     chart->setTheme(QtCharts::QChart::ChartThemeDark);
     ui->signal_chartLbl->setText(signal.name);
     // chart->setTitle(signal.name);
-    
+
     QtCharts::QChartView *chartView = new QtCharts::QChartView(chart);
     chartView->setRenderHint(QPainter::Antialiasing, true);
-    
+
     // Add the chartView to the signal_widget through its layout
     if (!(ui->signal_widget->layout()))
     {
@@ -129,10 +128,10 @@ void MainWindow::updateSignalCharts() const
         }
         layout->addWidget(chartView);
     }
-    
 }
 
-void MainWindow::updateDFTCharts() const {
+void MainWindow::updateDFTCharts() const
+{
     int signalIndex = getCurrentSignalIndex();
     const Signal &signal = this->signalList[signalIndex];
 
@@ -189,7 +188,6 @@ void MainWindow::updateDFTCharts() const {
         }
         layout->addWidget(chartView);
     }
-
 }
 
 void MainWindow::updateCharts() const
@@ -198,7 +196,8 @@ void MainWindow::updateCharts() const
     updateDFTCharts();
 }
 
-void MainWindow::on_graphBtn_clicked(){
+void MainWindow::on_graphBtn_clicked()
+{
     if (this->signalList.empty())
     {
         qWarning() << "No signals available to plot.";
@@ -217,12 +216,14 @@ void MainWindow::on_playBtn_clicked()
     }
 
     // Clean up previous playback if any
-    if (audio) {
+    if (audio)
+    {
         audio->stop();
         delete audio;
         audio = nullptr;
     }
-    if (generator) {
+    if (generator)
+    {
         generator->stop();
         delete generator;
         generator = nullptr;
@@ -230,26 +231,28 @@ void MainWindow::on_playBtn_clicked()
 
     // Check if any audio output device is available
     QList<QAudioDeviceInfo> devices = QAudioDeviceInfo::availableDevices(QAudio::AudioOutput);
-    if (devices.isEmpty()) {
+    if (devices.isEmpty())
+    {
         qWarning() << "No audio output device available. Cannot play audio.";
         return;
     }
 
     QAudioFormat format;
-    format.setSampleRate(44100);
+    format.setSampleRate(this->signalList[signalIndex].sampleRate);
     format.setChannelCount(1);
     format.setSampleSize(16);
     format.setCodec("audio/pcm");
     format.setByteOrder(QAudioFormat::LittleEndian);
     format.setSampleType(QAudioFormat::SignedInt);
 
-    if (!QAudioDeviceInfo::defaultOutputDevice().isFormatSupported(format)) {
+    if (!QAudioDeviceInfo::defaultOutputDevice().isFormatSupported(format))
+    {
         qWarning() << "Raw audio format not supported by backend";
         return;
     }
 
     generator = new SineWaveGenerator(this);
-    generator->start(44100, 440, 1000); // 440 Hz for 1 second
+    generator->start(this->signalList[signalIndex]);
 
     audio = new QAudioOutput(format, this);
     audio->start(generator);
@@ -301,13 +304,12 @@ void MainWindow::on_signal_removeBtn_clicked()
     if (!this->signalList.empty())
     {
         on_signal_currentIndexChanged(0);
-    } else
+    }
+    else
     {
         clearSignalProperties();
     }
-    
 }
-
 
 void MainWindow::on_signal_currentIndexChanged(int index)
 {
@@ -325,7 +327,6 @@ void MainWindow::on_signal_currentIndexChanged(int index)
     ui->signal_duration->setText(QString::number(signal.duration));
     ui->signal_sampleRate->setText(QString::number(signal.sampleRate));
 
-
     // Clear previous overtone data
     ui->overtone->blockSignals(true);
     ui->overtone->clear();
@@ -337,15 +338,13 @@ void MainWindow::on_signal_currentIndexChanged(int index)
     }
     ui->overtone->blockSignals(false);
 
-
     // If there are overtones, select the first one
     if (!signal.overtones.empty())
     {
         on_overtone_currentIndexChanged(0);
-    } 
+    }
     // on_overtone_currentIndexChanged(0);
 }
-
 
 // ---------- Hot-Update QLineEdits of signal properties
 void MainWindow::on_signal_name_textChanged(const QString &arg1)
@@ -372,10 +371,7 @@ void MainWindow::on_signal_sampleRate_textChanged(const QString &arg1)
     Signal &signal = this->signalList[getCurrentSignalIndex()];
     int sampleRate = arg1.toInt();
     signal.sampleRate = sampleRate;
-
 }
-
-
 
 // ---------- Overtone management
 
@@ -408,7 +404,6 @@ void MainWindow::clearOvertones() const
     WITH_NO_SIGNALS(overtone_phase, clear());
 }
 
-
 void MainWindow::on_overtone_removeBtn_clicked()
 {
     int currentIndex = ui->overtone->currentIndex();
@@ -431,9 +426,12 @@ void MainWindow::on_overtone_removeBtn_clicked()
     if (!signal.overtones.empty())
     {
         on_overtone_currentIndexChanged(0);
+    } else
+    {
+        // Clear overtone properties if no overtones left
+        clearOvertones();
     }
 }
-
 
 void MainWindow::on_overtone_currentIndexChanged(int index)
 {
@@ -457,8 +455,6 @@ void MainWindow::on_overtone_currentIndexChanged(int index)
         ui->overtone_phase->setText(QString::number(ot.phase));
     }
 }
-
-
 
 // ---------- Hot-Update QLineEdits of overtone properties
 
@@ -484,7 +480,6 @@ void MainWindow::on_overtone_amplitude_textChanged(const QString &arg1)
 
     double amplitude = arg1.toDouble();
     overtone.amplitude = amplitude;
-
 }
 
 void MainWindow::on_overtone_frequency_textChanged(const QString &arg1)
@@ -495,7 +490,6 @@ void MainWindow::on_overtone_frequency_textChanged(const QString &arg1)
 
     double frequency = arg1.toDouble();
     overtone.frequency = frequency;
-
 }
 
 void MainWindow::on_overtone_phase_textChanged(const QString &arg1)
@@ -506,6 +500,4 @@ void MainWindow::on_overtone_phase_textChanged(const QString &arg1)
 
     double phase = arg1.toDouble();
     overtone.phase = phase;
-
 }
-

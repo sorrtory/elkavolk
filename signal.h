@@ -6,6 +6,8 @@
 #include <QVariant>
 #include <QString>
 
+#include <QIODevice>
+
 // Overtone structure representing a harmonic signal
 // https://ru.wikipedia.org/wiki/%D0%93%D0%B0%D1%80%D0%BC%D0%BE%D0%BD%D0%B8%D1%87%D0%B5%D1%81%D0%BA%D0%B8%D0%B9_%D1%81%D0%B8%D0%B3%D0%BD%D0%B0%D0%BB
 struct overtone
@@ -21,7 +23,7 @@ struct overtone
         return amplitude * std::cos(2 * M_PI * frequency * time + phase);
     }
 
-    overtone(const QVariant& var)
+    overtone(const QVariant &var)
     {
         QVariantMap obj = var.toMap();
         name = obj["name"].toString();
@@ -35,12 +37,12 @@ struct overtone
 };
 
 // Signal class representing a collection of overtones
-class Signal
+struct Signal
 {
-public:
     Signal(QString name, int sampleRate, double duration, const std::vector<overtone> &overtones)
         : name(name), duration(duration), sampleRate(sampleRate), overtones(overtones) {};
-    Signal(const QVariant &other) {
+    Signal(const QVariant &other)
+    {
         QVariantMap obj = other.toMap();
         name = obj["name"].toString();
         duration = obj["duration"].toDouble();
@@ -61,11 +63,10 @@ public:
     // List of overtones making up the signal
     std::vector<overtone> overtones;
 
-    double duration;  // Duration in seconds
-    int sampleRate;   // Sample rate in Hz
-    QString name;     // Name of the signal
+    double duration; // Duration in seconds
+    int sampleRate;  // Sample rate in Hz
+    QString name;    // Name of the signal
 
-private:
     // Calculate the value of the signal at a given time
     const double getValue(double time) const
     {

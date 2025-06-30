@@ -68,6 +68,7 @@
         "cstring": "cpp",
         "future": "cpp",
         "iostream": "cpp",
-        "qaudiodecoder": "cpp"
+        "qaudiodecoder": "cpp",
+        "qiodevice": "cpp"
     }
 }
